@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "460818100752",
+    "firebase_url": "https://fir-messagingtest-40909.firebaseio.com",
+    "project_id": "fir-messagingtest-40909",
+    "storage_bucket": "fir-messagingtest-40909.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460818100752:android:e50f150eb7de172d",
+        "android_client_info": {
+          "package_name": "com.linjin.firebasemessagingtest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "460818100752-qhoqom9gdt9d9kdno0rkj67viqgnh10i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.linjin.firebasemessagingtest",
+            "certificate_hash": "0B776DBC0F5382AD205054290F1EBF66FD5AC559"
+          }
+        },
+        {
+          "client_id": "460818100752-mlsnpd3b9sgckk2bme5e2gmmiretua05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Hbs8e_jC1t90HmIe8Cj0_DvxFTK7dE0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "460818100752-mlsnpd3b9sgckk2bme5e2gmmiretua05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
