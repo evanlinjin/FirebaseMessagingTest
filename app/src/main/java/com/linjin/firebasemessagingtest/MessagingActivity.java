@@ -15,7 +15,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MessagingActivity extends AppCompatActivity {
     private List<String> messageArray;
@@ -57,6 +59,20 @@ public class MessagingActivity extends AppCompatActivity {
     public void sendMessage(View view) {
         EditText textView = (EditText) findViewById(R.id.msg_editText);
         String msg = textView.getText().toString();
+
+        String key = dbRef.child("posts").push().getKey();
+
+        // Create a map.
+        Map m1 = new HashMap();
+        m1.put("message", msg);
+//        Post post = new Post("0000", "Evan Lin", "My man.", "Test body.");
+//        Map<String, Object> postValues = post.toMap();
+
+//        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/" + key, message);
+
+//        database.updateChildren(childUpdates);
+
         dbRef.setValue(msg);
         textView.setText("");
     }
