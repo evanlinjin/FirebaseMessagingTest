@@ -1,5 +1,6 @@
 package com.linjin.firebasemessagingtest;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,6 +22,7 @@ import java.util.Map;
 
 public class MessagingActivity extends AppCompatActivity {
 
+    private static String name;
     private ArrayList<ChatMessage> messageArray;
     ChatMessageList adapter;
     ListView listView;
@@ -27,7 +31,6 @@ public class MessagingActivity extends AppCompatActivity {
     Button button;
 
     DatabaseReference chatRef;
-
     static boolean firstRun = true;
 
     @Override
@@ -41,6 +44,11 @@ public class MessagingActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
+
+        // Get intent.
+        Intent intent = getIntent();
+        name = intent.getStringExtra(LoginActivity._NAME_);
+
 
         // Instantiate 'textView' and 'button'.
         textView = (EditText) findViewById(R.id.msg_editText);
@@ -105,7 +113,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         String key = chatRef.child("posts").push().getKey();
 
-        ChatMessage chatMessage = new ChatMessage("evanlinjin", messageString);
+        ChatMessage chatMessage = new ChatMessage(name, messageString);
         Map<String, Object> new_message = new HashMap<>();
 
         new_message.put("/" + key, chatMessage);
@@ -125,6 +133,6 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     public void gotoListBottom(View view) {
-        listView.setSelection(listView.getCount()-1);
+        gotoListBottom();
     }
 }

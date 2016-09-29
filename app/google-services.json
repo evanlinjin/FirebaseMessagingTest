@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "460818100752-qhoqom9gdt9d9kdno0rkj67viqgnh10i.apps.googleusercontent.com",
+          "client_id": "460818100752-lfdl3agr2cam861lvjvci4g8ve7l6tad.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.linjin.firebasemessagingtest",
-            "certificate_hash": "0B776DBC0F5382AD205054290F1EBF66FD5AC559"
+            "certificate_hash": "69F616220BB209346DDEB6BCC1A59AB6A4C472B2"
           }
         },
         {

@@ -2,7 +2,6 @@ package com.linjin.firebasemessagingtest;
 
 import android.app.Activity;
 import android.text.SpannableString;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import java.util.List;
  */
 
 public class ChatMessageList extends ArrayAdapter<ChatMessage> {
+    private final static int changeHeadingTime = 60000*5; // In (ms)
     private Activity context;
     private List<ChatMessage> messages;
 
@@ -66,7 +66,7 @@ public class ChatMessageList extends ArrayAdapter<ChatMessage> {
     }
 
     private String getStringFromEpoch(long epoch, long epoch_old) {
-        if (epoch - epoch_old > 60000) {
+        if (epoch - epoch_old > changeHeadingTime) {
             Date date = new Date(epoch);
             SimpleDateFormat format = new SimpleDateFormat("HH:mm");
             return format.format(date);

@@ -12,9 +12,7 @@ public class ChatMessage {
     public String msg;
     public long epoch;
 
-    public ChatMessage() {
-
-    }
+    public ChatMessage(){}
 
     public ChatMessage(String uid, String msg) {
         this.uid = uid;
