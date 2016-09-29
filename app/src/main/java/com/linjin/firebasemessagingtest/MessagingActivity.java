@@ -3,6 +3,7 @@ package com.linjin.firebasemessagingtest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class MessagingActivity extends AppCompatActivity {
 
-    private static String name;
+    public static String name;
     private ArrayList<ChatMessage> messageArray;
     ChatMessageList adapter;
     ListView listView;
@@ -49,10 +50,21 @@ public class MessagingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         name = intent.getStringExtra(LoginActivity._NAME_);
 
-
         // Instantiate 'textView' and 'button'.
         textView = (EditText) findViewById(R.id.msg_editText);
         button = (Button) findViewById(R.id.msg_sendButton);
+
+        textView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    sendMessage();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         // Instantiate 'messageArray', 'adapter' and 'listView'.
         messageArray = new ArrayList<>();
@@ -60,52 +72,52 @@ public class MessagingActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
 
-        // Setup Firebase Persistence on First Run.
+        // Setup Firebase  on First Run.
         if (firstRun) {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true); // Enable Local Storage.
             firstRun = false;
+
+            // Setup Firebase Persistence.
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true); // Enable Local Storage.
+
+            // Instantiate Firebase database and database reference.
+            chatRef = FirebaseDatabase.getInstance().getReference().child("chat");
+            chatRef.addChildEventListener(
+                    new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            messageArray.add(dataSnapshot.getValue(ChatMessage.class));
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+                            messageArray.remove(dataSnapshot.getValue(ChatMessage.class));
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    }
+            );
         }
-        // Get Firebase Reference.
-        chatRef = FirebaseDatabase.getInstance().getReference().child("chat");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Instantiate Firebase database and database reference.
-        chatRef.addChildEventListener(
-                new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        messageArray.add(dataSnapshot.getValue(ChatMessage.class));
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-                        messageArray.remove(dataSnapshot.getValue(ChatMessage.class));
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                }
-        );
     }
 
     public void sendMessage(View view) {
+        sendMessage();
+    }
+    public void sendMessage() {
         enableSending(false);
         gotoListBottom();
         String messageString = textView.getText().toString();

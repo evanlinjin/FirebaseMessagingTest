@@ -5,18 +5,24 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class LoginActivity extends AppCompatActivity {
     public final static String _NAME_ = "com.linjin.firebasemessagingtest.NAME";
-    private final static String ACCESS_PASSWORD = "git";
+    private final static String ACCESS_PASSWORD = "ENTER_A_PASSWORD_HERE";
+
+    private final static String[] nameList = {"Ed", "Eric", "Evan", "Helen"};
 
     SharedPreferences sharedPref;
 
-    EditText mName, mPassword;
+    EditText mPassword;
     Button mButton;
+    Spinner mNameSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,29 +38,50 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        mName = (EditText) findViewById(R.id.name_edit);
         mPassword = (EditText) findViewById(R.id.password_edit);
         mButton = (Button) findViewById(R.id.button);
+        mNameSpinner = (Spinner) findViewById(R.id.name_spinner);
 
+        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, nameList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mNameSpinner.setAdapter(adapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
+        mPassword.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    attemptStart();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nameStr = mName.getText().toString();
-                String pwStr = mPassword.getText().toString();
-                if (pwStr.equals(ACCESS_PASSWORD)
-                        && !nameStr.isEmpty()
-                        && !nameStr.startsWith(" ")) {
-                    setPass(pwStr);
-                    startChat(setName(nameStr));
-                }
+                attemptStart();
             }
         });
+    }
+
+    private void attemptStart() {
+        String nameStr = mNameSpinner.getSelectedItem().toString();
+        String pwStr = mPassword.getText().toString();
+        if (pwStr.equals(ACCESS_PASSWORD)
+                && !nameStr.isEmpty()
+                && !nameStr.startsWith(" ")) {
+            setPass(pwStr);
+            startChat(setName(nameStr));
+        } else {
+            mPassword.setText("");
+        }
     }
 
     private void startChat(String name) {

@@ -53,22 +53,44 @@ public class ChatMessageList extends ArrayAdapter<ChatMessage> {
         }
 
         TextView message_label = (TextView) view.findViewById(R.id.message_label);
-        SpannableString msgText = new SpannableString(
-                String.valueOf(message.uid + ": " + message.msg)
-        );
-        msgText.setSpan(
-                new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                0, message.uid.length(), 0
-        );
-        message_label.setText(msgText);
+        SpannableString msgText;
+        if (message.uid.equals(MessagingActivity.name)) {
+            message_label.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
 
+            if (messages.get(position == 0 ? 0 : position - 1).uid.equals(messages.get(position).uid)
+                    && time_label.getText() == "") {
+                msgText = new SpannableString(String.valueOf(message.msg));
+            }
+            else {
+                msgText = new SpannableString(String.valueOf("You\n" + message.msg));
+                msgText.setSpan(
+                        new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                        0, 4, 0
+                );
+            }
+        }
+        else {
+            if (messages.get(position == 0 ? 0 : position - 1).uid.equals(messages.get(position).uid)
+                    && time_label.getText() == "") {
+                msgText = new SpannableString(String.valueOf(message.msg));
+            }
+            else {
+                msgText = new SpannableString(String.valueOf(message.uid + "\n" + message.msg));
+                msgText.setSpan(
+                        new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                        0, message.uid.length(), 0
+                );
+            }
+
+        }
+        message_label.setText(msgText);
         return view;
     }
 
     private String getStringFromEpoch(long epoch, long epoch_old) {
         if (epoch - epoch_old > changeHeadingTime) {
             Date date = new Date(epoch);
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm (dd/MM/yy)");
             return format.format(date);
         }
         return "";
