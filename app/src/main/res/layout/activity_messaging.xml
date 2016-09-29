@@ -9,6 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:entries="@+id/activity_message_list_delegate"/>
 
     <LinearLayout

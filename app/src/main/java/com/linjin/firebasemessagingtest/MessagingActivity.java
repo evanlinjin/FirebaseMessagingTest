@@ -3,38 +3,42 @@ package com.linjin.firebasemessagingtest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class MessagingActivity extends AppCompatActivity {
-    private List<String> messageArray;
-    ArrayAdapter adapter;
+
+    private ArrayList<ChatMessage> messageArray;
+    ChatMessageList adapter;
     ListView listView;
 
     EditText textView;
     Button button;
 
-    FirebaseDatabase database;
-    DatabaseReference dbRef;
+    DatabaseReference chatRef;
+
+    static boolean firstRun = true;
+
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+        firstRun = false;
+        super.onConfigurationChanged(newConfig);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
 
@@ -44,27 +48,45 @@ public class MessagingActivity extends AppCompatActivity {
 
         // Instantiate 'messageArray', 'adapter' and 'listView'.
         messageArray = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, R.layout.activity_message_list_delegate, messageArray);
+        adapter = new ChatMessageList(this, 0, messageArray);
         listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
 
+        // Setup Firebase Persistence on First Run.
+        if (firstRun) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true); // Enable Local Storage.
+            firstRun = false;
+        }
+        // Get Firebase Reference.
+        chatRef = FirebaseDatabase.getInstance().getReference().child("chat");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         // Instantiate Firebase database and database reference.
-        database = FirebaseDatabase.getInstance();
-        dbRef = database.getReference();
-        dbRef.addValueEventListener(
-                new ValueEventListener() {
+        chatRef.addChildEventListener(
+                new ChildEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        messageArray.clear();
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        messageArray.add(dataSnapshot.getValue(ChatMessage.class));
+                        adapter.notifyDataSetChanged();
+                    }
 
-                        Iterator<DataSnapshot> itr = dataSnapshot.getChildren().iterator();
-                        while(itr.hasNext()) {
-                            ChatMessage chatMessage = itr.next().getValue(ChatMessage.class);
-                            messageArray.add(chatMessage.msg);
-                        }
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                        adapter.notifyDataSetInvalidated();
-                        gotoListBottom();
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                        messageArray.remove(dataSnapshot.getValue(ChatMessage.class));
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
                     }
 
                     @Override
@@ -77,25 +99,25 @@ public class MessagingActivity extends AppCompatActivity {
 
     public void sendMessage(View view) {
         enableSending(false);
+        gotoListBottom();
         String messageString = textView.getText().toString();
         if (messageString.isEmpty()) {enableSending(true); return;}
 
-        String key = dbRef.child("posts").push().getKey();
+        String key = chatRef.child("posts").push().getKey();
 
         ChatMessage chatMessage = new ChatMessage("evanlinjin", messageString);
         Map<String, Object> new_message = new HashMap<>();
 
         new_message.put("/" + key, chatMessage);
-        dbRef.updateChildren(new_message);
+        chatRef.updateChildren(new_message);
 
         textView.setText("");
         enableSending(true);
     }
 
     private void enableSending(boolean status) {
-        //textView.setEnabled(status);
+        textView.setEnabled(status);
         button.setEnabled(status);
-        gotoListBottom();
     }
 
     public void gotoListBottom() {
