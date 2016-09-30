@@ -58,7 +58,11 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        (
+                                keyCode == KeyEvent.KEYCODE_ENTER ||
+                                keyCode == KeyEvent.KEYCODE_NAVIGATE_NEXT ||
+                                keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
+                        )) {
                     sendMessage();
                     return true;
                 }
@@ -75,42 +79,29 @@ public class MessagingActivity extends AppCompatActivity {
         // Setup Firebase  on First Run.
         if (firstRun) {
             firstRun = false;
-
             // Setup Firebase Persistence.
             FirebaseDatabase.getInstance().setPersistenceEnabled(true); // Enable Local Storage.
-
-            // Instantiate Firebase database and database reference.
+        }
+        if (chatRef == null) {
             chatRef = FirebaseDatabase.getInstance().getReference().child("chat");
-            chatRef.addChildEventListener(
-                    new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                            messageArray.add(dataSnapshot.getValue(ChatMessage.class));
-                            adapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot) {
-                            messageArray.remove(dataSnapshot.getValue(ChatMessage.class));
-                            adapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    }
-            );
+            chatRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    messageArray.add(dataSnapshot.getValue(ChatMessage.class));
+                    adapter.notifyDataSetChanged();
+                }
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    messageArray.remove(dataSnapshot.getValue(ChatMessage.class));
+                    adapter.notifyDataSetChanged();
+                }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
         }
     }
 
@@ -141,7 +132,7 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     public void gotoListBottom() {
-        listView.setSelection(listView.getCount()-1);
+        listView.smoothScrollToPosition(listView.getCount()-1);
     }
 
     public void gotoListBottom(View view) {

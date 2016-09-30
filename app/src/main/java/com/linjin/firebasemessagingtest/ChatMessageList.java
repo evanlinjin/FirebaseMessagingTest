@@ -1,11 +1,16 @@
 package com.linjin.firebasemessagingtest;
 
 import android.app.Activity;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -39,12 +44,9 @@ public class ChatMessageList extends ArrayAdapter<ChatMessage> {
 
         TextView time_label = (TextView) view.findViewById(R.id.time_label);
         time_label.setText(
-                getStringFromEpoch(
-                        message.epoch,
-                        position == 0 ? 0 : messages.get(position - 1).epoch
-                )
+                getStringFromEpoch(message.epoch, position == 0 ? 0 : messages.get(position - 1).epoch)
         );
-        if (time_label.getText() == "") {
+        if (time_label.getText().toString().isEmpty()) {
             ViewGroup.LayoutParams params = time_label.getLayoutParams();
             params.height = 0;
             time_label.setLayoutParams(params);
@@ -54,34 +56,22 @@ public class ChatMessageList extends ArrayAdapter<ChatMessage> {
 
         TextView message_label = (TextView) view.findViewById(R.id.message_label);
         SpannableString msgText;
-        if (message.uid.equals(MessagingActivity.name)) {
-            message_label.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
 
-            if (messages.get(position == 0 ? 0 : position - 1).uid.equals(messages.get(position).uid)
-                    && time_label.getText() == "") {
-                msgText = new SpannableString(String.valueOf(message.msg));
-            }
-            else {
-                msgText = new SpannableString(String.valueOf("You\n" + message.msg));
-                msgText.setSpan(
-                        new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                        0, 4, 0
-                );
-            }
+        if (message.uid.equals(MessagingActivity.name)) {
+//            message_label.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            msgText = new SpannableString(String.valueOf(message.msg));
+            view.findViewById(R.id.bubble).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+            view.findViewById(R.id.icon).setVisibility(View.INVISIBLE);
+            message_label.setBackgroundResource(R.drawable.colored_sqircle);
+            message_label.setTextColor(Color.WHITE);
         }
         else {
-            if (messages.get(position == 0 ? 0 : position - 1).uid.equals(messages.get(position).uid)
-                    && time_label.getText() == "") {
-                msgText = new SpannableString(String.valueOf(message.msg));
-            }
-            else {
-                msgText = new SpannableString(String.valueOf(message.uid + "\n" + message.msg));
-                msgText.setSpan(
-                        new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                        0, message.uid.length(), 0
-                );
-            }
-
+            msgText = new SpannableString(String.valueOf(message.uid + "\n" + message.msg));
+            msgText.setSpan(
+                    new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                    0, message.uid.length(), 0
+            );
+            view.findViewById(R.id.icon).setVisibility(View.GONE);
         }
         message_label.setText(msgText);
         return view;

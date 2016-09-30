@@ -14,7 +14,7 @@ import android.widget.Spinner;
 
 public class LoginActivity extends AppCompatActivity {
     public final static String _NAME_ = "com.linjin.firebasemessagingtest.NAME";
-    private final static String ACCESS_PASSWORD = "ENTER_A_PASSWORD_HERE";
+    private final static String ACCESS_PASSWORD = "c0mc0mwirele$$";
 
     private final static String[] nameList = {"Ed", "Eric", "Evan", "Helen"};
 
@@ -34,8 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         String name = getName();
         if (!name.isEmpty() && getPass().equals(ACCESS_PASSWORD)) {
             startChat(name);
-            finish();
-            return;
+//            finish();
+//            return;
         }
 
         mPassword = (EditText) findViewById(R.id.password_edit);

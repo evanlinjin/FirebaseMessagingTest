@@ -28,7 +28,9 @@
         <Button android:id="@+id/msg_sendButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            style="?attr/borderlessButtonStyle"
             android:text="Send"
+            android:textColor="@color/colorAccent"
             android:onClick="sendMessage"/>
 
     </LinearLayout>
